@@ -1,37 +1,46 @@
-use std::fmt::Display;
-
-pub enum Node {
-    Operation {
-        op: Op,
-        left_operand: Box<Node>,
-        right_operand: Box<Node>,
-    },
-    Value(f64),
+#[derive(Debug)]
+pub struct Node {
+    pub content: Content,
+    pub lhc: Option<Box<Node>>,
+    pub rhc: Option<Box<Node>>,
 }
 
 impl Node {
-    pub fn depth(&self, count: u32) -> u32 {
-        match self {
-            Node::Operation { op: _, left_operand, right_operand } => {
-                let left_depth = left_operand.depth(count + 1);
-                let right_depth = right_operand.depth(count + 1);
-                if left_depth > right_depth {
-                    left_depth
-                } else {
-                    right_depth
-                }
-            },
-            Node::Value(_) => count + 1,
+    pub fn new(content: Content) -> Self {
+        Self {
+            content: content,
+            lhc: None,
+            rhc: None,
+        }
+    }
+
+    pub fn put_l(&mut self, content: Content) {
+        self.lhc = Some(Box::new(Node::new(content)));
+    }
+    pub fn put_r(&mut self, content: Content) {
+        self.rhc = Some(Box::new(Node::new(content)));
+    }
+    pub fn get_l(&mut self) -> Option<&mut Box<Node>> {
+        match &mut self.lhc {
+            Some(v) => Some(v),
+            None => None,
+        }
+    }
+    pub fn get_r(&mut self) -> Option<&mut Box<Node>> {
+        match &mut self.rhc {
+            Some(v) => Some(v),
+            None => None,
         }
     }
 }
 
-// impl Display for Node {
-//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        
-//     }
-// }
+#[derive(Debug)]
+pub enum Content {
+    Value(f64),
+    Operation(Op)
+}
 
+#[derive(Debug)]
 pub enum Op {
     Add,
     Mul,
