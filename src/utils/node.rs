@@ -1,8 +1,8 @@
 #[derive(Debug)]
 pub struct Node {
     pub content: Content,
-    pub lhc: Option<Box<Node>>,
-    pub rhc: Option<Box<Node>>,
+    lhc: Option<Box<Node>>,
+    rhc: Option<Box<Node>>,
 }
 
 impl Node {
@@ -30,6 +30,24 @@ impl Node {
         match &mut self.rhc {
             Some(v) => Some(v),
             None => None,
+        }
+    }
+    pub fn depth(&mut self) -> u32 {
+        let mut left_depth = 0;
+        let mut right_depth = 0;
+        if !self.get_l().is_none() {
+            left_depth = self.get_l().unwrap().depth() + 1;
+        }
+        if !self.get_r().is_none() {
+            right_depth = self.get_r().unwrap().depth() + 1;
+        }
+        if left_depth != 0 || right_depth != 0 {
+            match left_depth < right_depth {
+                true => return right_depth,
+                false => return left_depth,
+            }
+        } else {
+            return 1;
         }
     }
 }
